@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="Crie flashcards simples e gratuitos direto no navegador. Ferramenta minimalista ideal para memorização rápida, revisões e estudos para concursos como PMPE e GCM."
+    />
+
+    <meta
+      name="keywords"
+      content="flashcard simples, criar flashcards, memorização, site de estudos, concursos, flashcards online"
+    />
+
+    <meta name="robots" content="index, follow" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flashcard Simples - Crie Cartões de Estudo Online</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-color: #f3f6fa;
+        --surface: #ffffff;
+        --primary: #14b8a6; /* Teal moderno */
+        --primary-hover: #0d9488;
+        --text-dark: #1e293b;
+        --text-light: #64748b;
+        --danger: #ef4444;
+        --radius: 24px;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* Sidebar */
+      aside {
+        width: 300px;
+        background: var(--surface);
+        padding: 30px;
+        border-right: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
+        z-index: 10;
+      }
+
+      h2, h1,
+      h3 {
+        margin: 0;
+        font-weight: 600;
+      }
+      h2 {
+        font-size: 1.5rem;
+        color: var(--primary);
+      }
+
+      .input-group {
+        display: flex;
+        gap: 10px;
+      }
+
+      input {
+        flex: 1;
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        font-family: "Poppins", sans-serif;
+        font-size: 0.9rem;
+        outline: none;
+        transition: 0.3s;
+      }
+
+      input:focus {
+        border-color: var(--primary);
+      }
+
+      button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px 20px;
+        border-radius: 16px;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+      }
+
+      /* Lista de Pastas */
+      .folder-list {
+        overflow-y: auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-right: 5px;
+      }
+
+      .folder-item {
+        padding: 16px;
+        background: var(--bg-color);
+        border-radius: 16px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 500;
+        transition: 0.3s;
+      }
+
+      .folder-item:hover {
+        background: #e2e8f0;
+      }
+      .folder-item.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-icon {
+        background: transparent;
+        padding: 5px;
+        color: inherit;
+        font-size: 1.2rem;
+      }
+      .btn-icon:hover {
+        transform: scale(1.1);
+        background: transparent;
+        color: var(--danger);
+      }
+
+      /* Export / Import Container */
+      .sidebar-footer {
+        margin-top: auto;
+        display: flex;
+        gap: 10px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+      }
+      
+      .btn-secondary {
+        background: var(--text-light);
+        flex: 1;
+        font-size: 0.85rem;
+        padding: 10px;
+      }
+      
+      .btn-secondary:hover {
+        background: #475569;
+      }
+
+      /* Main Content */
+      main {
+        flex: 1;
+        padding: 40px 50px;
+        overflow-y: auto;
+      }
+
+      .main-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        background: var(--surface);
+        padding: 20px 30px;
+        border-radius: var(--radius);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      }
+
+      /* Grid de Cards */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+      }
+
+      .card-container {
+        perspective: 1000px;
+        height: 200px;
+        cursor: pointer;
+      }
+
+      .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-style: preserve-3d;
+      }
+
+      .card-container.flipped .card-inner {
+        transform: rotateY(180deg);
+      }
+
+      .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius);
+        padding: 30px;
+        box-sizing: border-box;
+        text-align: center;
+        font-size: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      }
+
+      .card-front {
+        background: var(--surface);
+        border: 2px solid transparent;
+      }
+      .card-front:hover {
+        border-color: var(--primary);
+      }
+
+      .card-back {
+        background: #4f46e5;
+        color: rgb(255, 255, 255);
+        transform: rotateY(180deg);
+      }
+
+      .delete-card {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #f1f5f9;
+        color: var(--text-light);
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        z-index: 2;
+        transition: 0.2s;
+        padding: 0;
+      }
+
+      .delete-card:hover {
+        background: var(--danger);
+        color: white;
+      }
+
+      /* Scrollbar customizada */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <aside>
+      <h1>📚 Flashcard Simples para Estudos</h1>
+      <div class="input-group">
+        <input
+          type="text"
+          id="folderInp"
+          placeholder="Nova matéria..."
+          onkeyup="if (event.key === 'Enter') addFolder();"
+        />
+        <button onclick="addFolder()">+</button>
+      </div>
+      <div class="folder-list" id="folderList"></div>
+      
+      <div class="sidebar-footer">
+        <button class="btn-secondary" onclick="document.getElementById('fileInput').click()">📥 Importar</button>
+        <button onclick="exportData()" style="flex: 1; font-size: 0.85rem; padding: 10px;">📤 Exportar</button>
+        <input type="file" id="fileInput" style="display: none;" accept=".json" onchange="importData(event)">
+      </div>
+    </aside>
+
+    <main>
+      <div class="main-header" id="headerContainer" style="display: none">
+        <h2 id="currentTitle" style="color: var(--text-dark)">
+          Selecione uma matéria
+        </h2>
+        <button onclick="addCard()">+ Novo Flashcard</button>
+      </div>
+
+      <div class="grid" id="cardGrid">
+        <div
+          style="
+            text-align: center;
+            color: var(--text-light);
+            width: 100%;
+            grid-column: 1 / -1;
+            margin-top: 50px;
+          "
+        >
+          Crie uma pasta ao lado para começar (ex: Legislação, Português,
+          Raciocínio Lógico).
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let db = JSON.parse(localStorage.getItem("flashcards_v3")) || [];
+      let activeFolder = null;
+
+      function save() {
+        localStorage.setItem("flashcards_v3", JSON.stringify(db));
+        render();
+      }
+
+      function addFolder() {
+        const inp = document.getElementById("folderInp");
+        if (inp.value.trim() !== "") {
+          db.push({ name: inp.value.trim(), cards: [] });
+          inp.value = "";
+          if (activeFolder === null) activeFolder = db.length - 1;
+          save();
+        }
+      }
+
+      function deleteFolder(idx, event) {
+        event.stopPropagation();
+        if (
+          confirm(`Apagar a pasta "${db[idx].name}" e todos os seus cards?`)
+        ) {
+          db.splice(idx, 1);
+          if (activeFolder === idx) activeFolder = null;
+          else if (activeFolder > idx) activeFolder--;
+          save();
+        }
+      }
+
+      function addCard() {
+        const q = prompt("Frente do card (Pergunta/Conceito):");
+        if (!q) return;
+        const a = prompt("Verso do card (Resposta/Lei):");
+        if (q && a) {
+          db[activeFolder].cards.push({ q, a });
+          save();
+        }
+      }
+
+      function deleteCard(cardIdx, event) {
+        event.stopPropagation(); // Evita que o card vire ao clicar em apagar
+        if (confirm("Apagar este flashcard?")) {
+          db[activeFolder].cards.splice(cardIdx, 1);
+          save();
+        }
+      }
+
+      function selectFolder(idx) {
+        activeFolder = idx;
+        render();
+      }
+
+      // Função para Exportar Dados
+      function exportData() {
+        if (db.length === 0) {
+          alert("Não há dados para exportar.");
+          return;
+        }
+        const dataStr = JSON.stringify(db, null, 2);
+        const dataBlob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(dataBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "meus_flashcards.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      // Função para Importar Dados
+      function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            const importedDb = JSON.parse(e.target.result);
+            // Verifica se o arquivo tem o formato correto (um array)
+            if (Array.isArray(importedDb)) {
+              if(confirm("Isso irá substituir ou mesclar com seus cards atuais. Deseja continuar?")) {
+                db = importedDb;
+                activeFolder = null;
+                save();
+                alert("Flashcards importados com sucesso!");
+              }
+            } else {
+              alert("Arquivo inválido. Formato incorreto.");
+            }
+          } catch (error) {
+            alert("Erro ao ler o arquivo. Certifique-se de que é um arquivo .json válido.");
+          }
+        };
+        reader.readAsText(file);
+        event.target.value = ''; // Reseta o input de arquivo
+      }
+
+      function render() {
+        const fList = document.getElementById("folderList");
+        fList.innerHTML = "";
+        db.forEach((f, i) => {
+          fList.innerHTML += `
+                <div class="folder-item ${activeFolder === i ? "active" : ""}" onclick="selectFolder(${i})">
+                    <span>${f.name}</span>
+                    <button class="btn-icon" onclick="deleteFolder(${i}, event)">×</button>
+                </div>`;
+        });
+
+        const grid = document.getElementById("cardGrid");
+        const header = document.getElementById("headerContainer");
+
+        if (activeFolder !== null && db[activeFolder]) {
+          header.style.display = "flex";
+          document.getElementById("currentTitle").innerText =
+            db[activeFolder].name;
+          grid.innerHTML = "";
+
+          if (db[activeFolder].cards.length === 0) {
+            grid.innerHTML = `<p style="color: var(--text-light);">Nenhum card nesta matéria ainda. Clique em "+ Novo Flashcard".</p>`;
+          }
+
+          db[activeFolder].cards.forEach((c, i) => {
+            grid.innerHTML += `
+                    <div class="card-container" onclick="this.classList.toggle('flipped')">
+                        <div class="card-inner">
+                            <div class="card-face card-front">
+                                <button class="delete-card" onclick="deleteCard(${i}, event)">×</button>
+                                <strong>${c.q}</strong>
+                            </div>
+                            <div class="card-face card-back">
+                                <span>${c.a}</span>
+                            </div>
+                        </div>
+                    </div>`;
+          });
+        } else {
+          header.style.display = "none";
+          grid.innerHTML = `<div style="text-align: center; color: var(--text-light); width: 100%; grid-column: 1 / -1; margin-top: 50px;">Selecione ou crie uma pasta para começar.</div>`;
+        }
+      }
+
+      render();
+    </script>
+  </body>
+</html>
