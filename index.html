@@ -6,14 +6,11 @@
       name="description"
       content="Crie flashcards simples e gratuitos direto no navegador. Ferramenta minimalista ideal para memorização rápida, revisões e estudos para concursos como PMPE e GCM."
     />
-
     <meta
       name="keywords"
       content="flashcard simples, criar flashcards, memorização, site de estudos, concursos, flashcards online"
     />
-
     <meta name="robots" content="index, follow" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flashcard Simples - Crie Cartões de Estudo Online</title>
     <link
@@ -24,7 +21,7 @@
       :root {
         --bg-color: #f3f6fa;
         --surface: #ffffff;
-        --primary: #14b8a6; /* Teal moderno */
+        --primary: #14b8a6;
         --primary-hover: #0d9488;
         --text-dark: #1e293b;
         --text-light: #64748b;
@@ -55,20 +52,17 @@
         z-index: 10;
       }
 
-      h2, h1,
-      h3 {
+      h1, h2, h3 {
         margin: 0;
         font-weight: 600;
       }
+      h1 { font-size: 1.3rem; }
       h2 {
         font-size: 1.5rem;
         color: var(--primary);
       }
 
-      .input-group {
-        display: flex;
-        gap: 10px;
-      }
+      .input-group { display: flex; gap: 10px; }
 
       input {
         flex: 1;
@@ -79,11 +73,11 @@
         font-size: 0.9rem;
         outline: none;
         transition: 0.3s;
+        width: 100%;
+        box-sizing: border-box;
       }
 
-      input:focus {
-        border-color: var(--primary);
-      }
+      input:focus { border-color: var(--primary); }
 
       button {
         background: var(--primary);
@@ -124,9 +118,7 @@
         transition: 0.3s;
       }
 
-      .folder-item:hover {
-        background: #e2e8f0;
-      }
+      .folder-item:hover { background: #e2e8f0; }
       .folder-item.active {
         background: var(--primary);
         color: white;
@@ -160,9 +152,7 @@
         padding: 10px;
       }
       
-      .btn-secondary:hover {
-        background: #475569;
-      }
+      .btn-secondary:hover { background: #475569; }
 
       /* Main Content */
       main {
@@ -203,9 +193,7 @@
         transform-style: preserve-3d;
       }
 
-      .card-container.flipped .card-inner {
-        transform: rotateY(180deg);
-      }
+      .card-container.flipped .card-inner { transform: rotateY(180deg); }
 
       .card-face {
         position: absolute;
@@ -228,9 +216,7 @@
         background: var(--surface);
         border: 2px solid transparent;
       }
-      .card-front:hover {
-        border-color: var(--primary);
-      }
+      .card-front:hover { border-color: var(--primary); }
 
       .card-back {
         background: #4f46e5;
@@ -261,16 +247,51 @@
         color: white;
       }
 
-      /* Scrollbar customizada */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 10px;
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+      /* =========================================
+         MODIFICAÇÕES PARA CELULAR (RESPONSIVIDADE)
+         ========================================= */
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column; /* Coloca o menu em cima e os cards embaixo */
+        }
+
+        aside {
+          width: 100%;
+          height: 45vh; /* Ocupa 45% da tela no celular */
+          padding: 20px;
+          border-right: none;
+          border-bottom: 1px solid #e2e8f0;
+          box-sizing: border-box;
+        }
+
+        main {
+          height: 55vh; /* Ocupa o restante da tela */
+          padding: 20px;
+        }
+
+        .main-header {
+          flex-direction: column; /* Empilha o título e o botão */
+          gap: 15px;
+          text-align: center;
+          padding: 15px;
+          margin-bottom: 25px;
+        }
+
+        .main-header button {
+          width: 100%; /* Botão ocupa a largura toda para facilitar o toque */
+        }
+
+        .grid {
+          grid-template-columns: 1fr; /* 1 card por linha no celular */
+        }
+
+        .card-face {
+          font-size: 1.2rem; /* Fonte um pouco menor para caber textos longos no celular */
+        }
       }
     </style>
   </head>
@@ -297,24 +318,13 @@
 
     <main>
       <div class="main-header" id="headerContainer" style="display: none">
-        <h2 id="currentTitle" style="color: var(--text-dark)">
-          Selecione uma matéria
-        </h2>
+        <h2 id="currentTitle" style="color: var(--text-dark)">Selecione uma matéria</h2>
         <button onclick="addCard()">+ Novo Flashcard</button>
       </div>
 
       <div class="grid" id="cardGrid">
-        <div
-          style="
-            text-align: center;
-            color: var(--text-light);
-            width: 100%;
-            grid-column: 1 / -1;
-            margin-top: 50px;
-          "
-        >
-          Crie uma pasta ao lado para começar (ex: Legislação, Português,
-          Raciocínio Lógico).
+        <div style="text-align: center; color: var(--text-light); width: 100%; grid-column: 1 / -1; margin-top: 50px;">
+          Crie uma pasta para começar (ex: Legislação, Português, Raciocínio Lógico).
         </div>
       </div>
     </main>
@@ -340,9 +350,7 @@
 
       function deleteFolder(idx, event) {
         event.stopPropagation();
-        if (
-          confirm(`Apagar a pasta "${db[idx].name}" e todos os seus cards?`)
-        ) {
+        if (confirm(`Apagar a pasta "${db[idx].name}" e todos os seus cards?`)) {
           db.splice(idx, 1);
           if (activeFolder === idx) activeFolder = null;
           else if (activeFolder > idx) activeFolder--;
@@ -361,7 +369,7 @@
       }
 
       function deleteCard(cardIdx, event) {
-        event.stopPropagation(); // Evita que o card vire ao clicar em apagar
+        event.stopPropagation();
         if (confirm("Apagar este flashcard?")) {
           db[activeFolder].cards.splice(cardIdx, 1);
           save();
@@ -373,7 +381,6 @@
         render();
       }
 
-      // Função para Exportar Dados
       function exportData() {
         if (db.length === 0) {
           alert("Não há dados para exportar.");
@@ -391,7 +398,6 @@
         URL.revokeObjectURL(url);
       }
 
-      // Função para Importar Dados
       function importData(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -400,7 +406,6 @@
         reader.onload = function(e) {
           try {
             const importedDb = JSON.parse(e.target.result);
-            // Verifica se o arquivo tem o formato correto (um array)
             if (Array.isArray(importedDb)) {
               if(confirm("Isso irá substituir ou mesclar com seus cards atuais. Deseja continuar?")) {
                 db = importedDb;
@@ -416,7 +421,7 @@
           }
         };
         reader.readAsText(file);
-        event.target.value = ''; // Reseta o input de arquivo
+        event.target.value = '';
       }
 
       function render() {
@@ -435,8 +440,7 @@
 
         if (activeFolder !== null && db[activeFolder]) {
           header.style.display = "flex";
-          document.getElementById("currentTitle").innerText =
-            db[activeFolder].name;
+          document.getElementById("currentTitle").innerText = db[activeFolder].name;
           grid.innerHTML = "";
 
           if (db[activeFolder].cards.length === 0) {
