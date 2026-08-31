@@ -153,7 +153,6 @@
         background: #e2e8f0;
       }
       
-      /* Tom de azul clareado e otimizado */
       .folder-item.active {
         background: #3b82f6;
         color: #ffffff;
@@ -472,7 +471,6 @@
       .edit-card,
       .speak-btn {
         position: absolute;
-        top: 16px;
         background: rgba(148, 163, 184, 0.12);
         color: var(--text-dark);
         border-radius: 50%;
@@ -536,21 +534,25 @@
       }
 
       .edit-card {
+        top: 16px;
         right: 58px;
         width: 34px;
         height: 34px;
       }
 
+      /* Ícone de fala movido para o canto inferior direito */
       .speak-btn {
-        left: 16px;
+        bottom: 16px;
+        right: 16px;
         width: 34px;
         height: 34px;
       }
 
+      /* Ícone de arrastar movido para o canto superior esquerdo */
       .drag-handle {
         position: absolute;
-        bottom: 16px;
-        right: 16px;
+        top: 16px;
+        left: 16px;
         width: 34px;
         height: 34px;
         display: flex;
@@ -562,13 +564,19 @@
         border: 1px solid rgba(148, 163, 184, 0.25);
         cursor: grab;
         transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
-        z-index: 2;
+        z-index: 21;
         padding: 0;
       }
 
       .drag-handle:hover {
         background: var(--surface);
         border-color: var(--border);
+      }
+
+      body.dark .drag-handle {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text-light);
+        border-color: rgba(148, 163, 184, 0.16);
       }
 
       .folder-handle {
