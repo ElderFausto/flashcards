@@ -22,8 +22,8 @@
         --bg-color: #eff3f7;
         --surface: #ffffff;
         --surface-strong: #f8fafc;
-        --primary: #2563eb;
-        --primary-hover: #1d4ed8;
+        --primary: #3b82f6;
+        --primary-hover: #2563eb;
         --text-dark: #0f172a;
         --text-light: #475569;
         --muted: #64748b;
@@ -137,7 +137,8 @@
       }
 
       .folder-item {
-        padding: 16px 18px;
+        padding: 18px 18px;
+        min-height: 58px;
         background: var(--bg-color);
         border-radius: 16px;
         cursor: pointer;
@@ -151,9 +152,25 @@
       .folder-item:hover {
         background: #e2e8f0;
       }
+      
+      /* Tom de azul clareado e otimizado */
       .folder-item.active {
-        background: var(--primary);
-        color: white;
+        background: #3b82f6;
+        color: #ffffff;
+      }
+
+      .folder-item.active .folder-count {
+        color: #e0e7ff;
+      }
+
+      .folder-item.active .folder-actions button {
+        background: rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      .folder-item.active .folder-actions button:hover {
+        background: rgba(255, 255, 255, 0.35);
       }
 
       .btn-icon {
@@ -166,12 +183,6 @@
         transform: scale(1.1);
         background: transparent;
         color: var(--danger);
-      }
-
-      .folder-item {
-        padding: 18px 18px;
-        min-height: 58px;
-        align-items: center;
       }
 
       .folder-item span {
@@ -234,7 +245,6 @@
       .folder-search input {
         width: 100%;
       }
-
 
       /* Export / Import Container */
       .sidebar-footer {
@@ -302,7 +312,6 @@
         background: rgba(255, 255, 255, 0.08);
         color: var(--text-light);
       }
-
 
       /* Main Content */
       main {
@@ -442,7 +451,7 @@
       }
 
       .card-back {
-        background: linear-gradient(180deg, rgba(37, 99, 235, 1), rgba(14, 165, 233, 1));
+        background: linear-gradient(180deg, #3b82f6, #0ea5e9);
         color: #f8fafc;
         transform: rotateY(180deg);
         border-color: rgba(255, 255, 255, 0.05);
@@ -587,10 +596,6 @@
         border-radius: 10px;
       }
 
-      /* =========================================
-         MODIFICAÇÕES PARA CELULAR (RESPONSIVIDADE)
-         ========================================= */
-      /* Responsividade Mobile */
       @media (max-width: 768px) {
         body {
           flex-direction: column;
