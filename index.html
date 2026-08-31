@@ -1,0 +1,1191 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="Crie flashcards simples e gratuitos direto no navegador. Ferramenta minimalista ideal para memorização rápida, revisões e estudos."
+    />
+    <meta
+      name="keywords"
+      content="flashcard simples, criar flashcards, memorização, site de estudos, concursos, flashcards online"
+    />
+    <meta name="robots" content="index, follow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flashcard Simples - Crie Cartões de Estudo Online</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-color: #eff3f7;
+        --surface: #ffffff;
+        --surface-strong: #f8fafc;
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --text-dark: #0f172a;
+        --text-light: #475569;
+        --muted: #64748b;
+        --danger: #ef4444;
+        --border: #d6dce5;
+        --shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+        --radius: 24px;
+      }
+
+      body.dark {
+        --bg-color: #0b1120;
+        --surface: #111827;
+        --surface-strong: #17203a;
+        --primary: #60a5fa;
+        --primary-hover: #3b82f6;
+        --text-dark: #f8fafc;
+        --text-light: #cbd5e1;
+        --muted: #94a3b8;
+        --danger: #f87171;
+        --border: #273145;
+        --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      }
+
+      *, *::before, *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", "Poppins", sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-dark);
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+      }
+
+      /* Sidebar */
+      aside {
+        width: 300px;
+        background: var(--surface);
+        padding: 32px;
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        box-shadow: 8px 0 40px rgba(15, 23, 42, 0.08);
+        z-index: 10;
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-weight: 600;
+      }
+      h1 {
+        font-size: 1.3rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+        color: var(--primary);
+      }
+
+      .input-group {
+        display: flex;
+        gap: 10px;
+      }
+
+      input {
+        flex: 1;
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        font-family: "Poppins", sans-serif;
+        font-size: 0.9rem;
+        outline: none;
+        transition: 0.3s;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      input:focus {
+        border-color: var(--primary);
+      }
+
+      button {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px 20px;
+        border-radius: 16px;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+      }
+
+      /* Lista de Pastas */
+      .folder-list {
+        overflow-y: auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-right: 5px;
+      }
+
+      .folder-item {
+        padding: 16px 18px;
+        background: var(--bg-color);
+        border-radius: 16px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 500;
+        transition: 0.3s;
+      }
+
+      .folder-item:hover {
+        background: #e2e8f0;
+      }
+      .folder-item.active {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-icon {
+        background: transparent;
+        padding: 5px;
+        color: inherit;
+        font-size: 1.2rem;
+      }
+      .btn-icon:hover {
+        transform: scale(1.1);
+        background: transparent;
+        color: var(--danger);
+      }
+
+      .folder-item {
+        padding: 18px 18px;
+        min-height: 58px;
+        align-items: center;
+      }
+
+      .folder-item span {
+        display: block;
+        width: 100%;
+        font-size: 1rem;
+        line-height: 1.5;
+        text-align: left;
+        white-space: normal;
+        word-break: break-word;
+      }
+
+      .folder-label {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .folder-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: inherit;
+        line-height: 1.4;
+      }
+
+      .folder-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+        justify-content: flex-start;
+        min-width: 42px;
+      }
+
+      .folder-count {
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+
+      .folder-actions button {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        background: rgba(37, 99, 235, 0.08);
+        color: var(--text-dark);
+        font-size: 0.95rem;
+      }
+
+      .folder-actions button:hover {
+        background: rgba(37, 99, 235, 0.16);
+      }
+
+      .folder-search {
+        margin-bottom: 10px;
+      }
+
+      .folder-search input {
+        width: 100%;
+      }
+
+
+      /* Export / Import Container */
+      .sidebar-footer {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding-top: 0;
+      }
+
+      .sidebar-footer button,
+      .btn-secondary {
+        width: 100%;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: flex-start;
+        background: rgba(37, 99, 235, 0.08);
+        color: var(--text-dark);
+        border: none;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+        padding: 14px 18px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        text-align: left;
+      }
+
+      .sidebar-footer button:hover,
+      .btn-secondary:hover {
+        background: rgba(37, 99, 235, 0.14);
+        color: var(--primary);
+        transform: none;
+      }
+
+      body.dark .sidebar-footer button,
+      body.dark .btn-secondary {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-light);
+      }
+
+      .theme-toggle {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(37, 99, 235, 0.08);
+        color: var(--text-dark);
+        border: none;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+        transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        cursor: pointer;
+      }
+
+      .theme-toggle:hover {
+        background: rgba(37, 99, 235, 0.14);
+        color: var(--primary);
+        transform: none;
+      }
+
+      body.dark .theme-toggle {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text-light);
+      }
+
+
+      /* Main Content */
+      main {
+        flex: 1;
+        padding: 40px 50px;
+        overflow-y: auto;
+      }
+
+      .main-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 34px;
+        background: var(--surface);
+        padding: 24px 32px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+      }
+
+      .main-header h2 {
+        margin: 0;
+        font-size: 1.55rem;
+        line-height: 1.15;
+        color: var(--text-dark);
+      }
+
+      .main-header .theme-toggle {
+        margin-left: auto;
+      }
+
+      /* Grid de Cards */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 28px;
+      }
+
+      .card-container {
+        perspective: 1000px;
+        min-height: 220px;
+        cursor: grab;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+        touch-action: none;
+      }
+
+      .card-container.add-card {
+        cursor: pointer;
+      }
+
+      .card-container.add-card .card-face {
+        background: rgba(20, 184, 166, 0.08);
+        border: 2px dashed var(--primary);
+      }
+
+      .card-container.add-card .card-face:hover {
+        border-color: var(--primary-hover);
+        transform: translateY(-2px);
+      }
+
+      .card-container.add-card .card-face {
+        justify-content: center;
+      }
+
+      .card-container.add-card strong {
+        font-size: 2.4rem;
+        color: var(--primary);
+      }
+
+      .card-container.add-card span {
+        margin-top: 10px;
+        color: var(--text-light);
+        font-size: 0.95rem;
+      }
+
+      .card-container.dragging {
+        opacity: 0.6;
+        transform: scale(0.98);
+      }
+
+      .card-container.drag-over {
+        border: 2px dashed var(--primary);
+        border-radius: var(--radius);
+      }
+
+      .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-style: preserve-3d;
+      }
+
+      .card-container.flipped .card-inner {
+        transform: rotateY(180deg);
+      }
+
+      .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 28px;
+        padding: 28px;
+        text-align: center;
+        font-size: 1.35rem;
+        box-shadow: var(--shadow);
+        border: 1px solid transparent;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .card-container:not(.flipped) .card-front,
+      .card-container.flipped .card-back {
+        pointer-events: auto;
+      }
+
+      .card-face strong,
+      .card-face span {
+        max-width: 100%;
+        word-break: break-word;
+      }
+
+      .card-front {
+        background: var(--surface);
+        border-color: var(--border);
+        color: var(--text-dark);
+      }
+
+      .card-front:hover {
+        border-color: var(--primary);
+      }
+
+      .card-back {
+        background: linear-gradient(180deg, rgba(37, 99, 235, 1), rgba(14, 165, 233, 1));
+        color: #f8fafc;
+        transform: rotateY(180deg);
+        border-color: rgba(255, 255, 255, 0.05);
+      }
+
+      body.dark .card-front {
+        background: var(--surface-strong);
+        border-color: var(--border);
+        color: var(--text-light);
+      }
+
+      body.dark .card-back {
+        background: linear-gradient(180deg, rgba(30, 58, 138, 0.96), rgba(37, 99, 235, 0.96));
+        color: #f8fafc;
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .edit-card,
+      .speak-btn {
+        position: absolute;
+        top: 16px;
+        background: rgba(148, 163, 184, 0.12);
+        color: var(--text-dark);
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        z-index: 21;
+        transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        padding: 0;
+      }
+
+      .delete-card {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: rgba(239, 68, 68, 0.14);
+        color: var(--danger);
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        z-index: 22;
+        transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        padding: 0;
+      }
+
+      body.dark .edit-card,
+      body.dark .speak-btn {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text-light);
+        border-color: rgba(148, 163, 184, 0.16);
+      }
+
+      body.dark .delete-card {
+        background: rgba(248, 113, 113, 0.18);
+        color: white;
+        border-color: rgba(248, 113, 113, 0.3);
+      }
+
+      .edit-card:hover,
+      .speak-btn:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-1px);
+        border-color: transparent;
+      }
+
+      .delete-card:hover {
+        background: var(--danger);
+        color: white;
+        transform: translateY(-1px);
+        border-color: transparent;
+      }
+
+      .edit-card {
+        right: 58px;
+        width: 34px;
+        height: 34px;
+      }
+
+      .speak-btn {
+        left: 16px;
+        width: 34px;
+        height: 34px;
+      }
+
+      .drag-handle {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(148, 163, 184, 0.12);
+        color: var(--text-dark);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        cursor: grab;
+        transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+        z-index: 2;
+        padding: 0;
+      }
+
+      .drag-handle:hover {
+        background: var(--surface);
+        border-color: var(--border);
+      }
+
+      .folder-handle {
+        margin-left: 10px;
+        min-width: auto;
+        width: 36px;
+        background: rgba(148, 163, 184, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        cursor: grab;
+      }
+
+      .folder-item.drag-over {
+        border: 1px dashed var(--primary);
+        background: rgba(37, 99, 235, 0.08);
+      }
+
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
+
+      /* =========================================
+         MODIFICAÇÕES PARA CELULAR (RESPONSIVIDADE)
+         ========================================= */
+      /* Responsividade Mobile */
+      @media (max-width: 768px) {
+        body {
+          flex-direction: column;
+          height: auto;
+          overflow: visible;
+        }
+
+        aside {
+          width: 100%;
+          height: auto;
+          padding: 18px;
+          border-right: none;
+          border-bottom: 1px solid #e2e8f0;
+          box-sizing: border-box;
+          position: sticky;
+          top: 0;
+        }
+
+        .folder-list {
+          max-height: 220px;
+          gap: 12px;
+        }
+
+        .folder-item {
+          flex-direction: column;
+          align-items: stretch;
+          text-align: left;
+          gap: 10px;
+        }
+
+        .folder-item span {
+          font-size: 1rem;
+        }
+
+        main {
+          padding: 18px;
+          height: auto;
+          overflow: visible;
+        }
+
+        .main-header {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 15px;
+          align-items: center;
+          text-align: left;
+          padding: 20px;
+        }
+
+        .main-header h2 {
+          font-size: 1.35rem;
+          flex: 1 1 auto;
+        }
+
+        .main-header .theme-toggle {
+          margin-left: auto;
+        }
+
+        .card-container {
+          min-height: 180px;
+        }
+
+        .sidebar-footer {
+          flex-direction: column;
+          font-size: 0.95rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <aside>
+      <div class="input-group">
+        <input
+          type="text"
+          id="folderInp"
+          placeholder="Nova matéria..."
+          onkeyup="if (event.key === 'Enter') addFolder();"
+        />
+        <button onclick="addFolder()">+</button>
+      </div>
+      <div class="folder-search">
+        <input
+          type="text"
+          id="folderSearch"
+          placeholder="Buscar matérias..."
+          oninput="render()"
+        />
+      </div>
+      <div class="folder-list" id="folderList"></div>
+
+      <div class="sidebar-footer">
+        <button
+          class="btn-secondary"
+          onclick="document.getElementById('fileInput').click()"
+        >
+          📥 Importar
+        </button>
+        <button
+          onclick="exportData()"
+        >
+          📤 Exportar
+        </button>
+        <input
+          type="file"
+          id="fileInput"
+          style="display: none"
+          accept=".json"
+          onchange="importData(event)"
+        />
+      </div>
+    </aside>
+
+    <main>
+      <div class="main-header" id="headerContainer" style="display: none">
+        <h2 id="currentTitle" style="color: var(--text-dark)">
+          Selecione uma matéria
+        </h2>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" type="button" title="Alternar modo claro/escuro">🌙</button>
+      </div>
+
+      <div class="grid" id="cardGrid">
+        <div
+          style="
+            text-align: center;
+            color: var(--text-light);
+            width: 100%;
+            grid-column: 1 / -1;
+            margin-top: 50px;
+          "
+        >
+          Crie uma pasta para começar (ex: Legislação, Português, Raciocínio
+          Lógico).
+        </div>
+      </div>
+    </main>
+
+    <script>
+      let db = JSON.parse(localStorage.getItem("flashcards_v3")) || [];
+      let activeFolder = null;
+      let draggedCardIndex = null;
+      let draggedFolderIndex = null;
+      let dragBlockedClick = false;
+      let touchDraggingCardIndex = null;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let touchTargetIndex = null;
+
+      function save() {
+        localStorage.setItem("flashcards_v3", JSON.stringify(db));
+        render();
+      }
+
+      function addFolder() {
+        const inp = document.getElementById("folderInp");
+        if (inp.value.trim() !== "") {
+          db.push({ name: inp.value.trim(), cards: [] });
+          inp.value = "";
+          if (activeFolder === null) activeFolder = db.length - 1;
+          save();
+        }
+      }
+
+      function deleteFolder(idx, event) {
+        event.stopPropagation();
+        if (
+          confirm(`Apagar a pasta "${db[idx].name}" e todos os seus cards?`)
+        ) {
+          db.splice(idx, 1);
+          if (activeFolder === idx) activeFolder = null;
+          else if (activeFolder > idx) activeFolder--;
+          save();
+        }
+      }
+
+      function editFolderName(idx, event) {
+        event.stopPropagation();
+        const folder = db[idx];
+        const newName = prompt("Editar nome da matéria:", folder.name);
+        if (newName === null) return;
+        const trimmed = newName.trim();
+        if (trimmed === "") {
+          alert("O nome da matéria não pode ficar em branco.");
+          return;
+        }
+        folder.name = trimmed;
+        save();
+      }
+
+      function addCard() {
+        const q = prompt("Frente do card (Pergunta/Conceito):");
+        if (!q) return;
+        const a = prompt("Verso do card (Resposta/Lei):");
+        if (q && a) {
+          db[activeFolder].cards.push({ q, a });
+          save();
+        }
+      }
+
+      function addCardInline() {
+        if (activeFolder === null || !db[activeFolder]) return;
+        const q = document.getElementById("quickQ").value.trim();
+        const a = document.getElementById("quickA").value.trim();
+        if (!q || !a) {
+          alert("Preencha frente e verso antes de adicionar.");
+          return;
+        }
+        db[activeFolder].cards.push({ q, a });
+        document.getElementById("quickQ").value = "";
+        document.getElementById("quickA").value = "";
+        save();
+      }
+
+      function deleteCard(cardIdx, event) {
+        event.stopPropagation();
+        if (confirm("Apagar este flashcard?")) {
+          db[activeFolder].cards.splice(cardIdx, 1);
+          save();
+        }
+      }
+
+      function toggleTheme() {
+        document.body.classList.toggle("dark");
+        const isDark = document.body.classList.contains("dark");
+        localStorage.setItem("flashcards_theme", isDark ? "dark" : "light");
+        updateThemeButton();
+      }
+
+      function updateThemeButton() {
+        const button = document.getElementById("themeToggle");
+        if (!button) return;
+        if (document.body.classList.contains("dark")) {
+          button.innerText = "☀️";
+        } else {
+          button.innerText = "🌙";
+        }
+      }
+
+      function loadTheme() {
+        const saved = localStorage.getItem("flashcards_theme");
+        if (saved === "dark") {
+          document.body.classList.add("dark");
+        }
+        updateThemeButton();
+      }
+
+      function editCard(cardIdx, event) {
+        event.stopPropagation();
+        const card = db[activeFolder].cards[cardIdx];
+        const newQ = prompt("Editar frente do card:", card.q);
+        if (newQ === null) return;
+
+        const newA = prompt("Editar verso do card:", card.a);
+        if (newA === null) return;
+
+        card.q = newQ.trim();
+        card.a = newA.trim();
+        save();
+      }
+
+      function handleCardClick(cardEl, cardIdx) {
+        if (dragBlockedClick) {
+          dragBlockedClick = false;
+          return;
+        }
+        cardEl.classList.toggle("flipped");
+      }
+
+      function handleCardDragStart(cardIdx, event) {
+        draggedCardIndex = cardIdx;
+        dragBlockedClick = true;
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", String(cardIdx));
+        event.currentTarget.classList.add("dragging");
+      }
+
+      function handleCardDragOver(cardIdx, event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        const target = event.currentTarget;
+        target.classList.add("drag-over");
+      }
+
+      function handleCardDragLeave(event) {
+        event.currentTarget.classList.remove("drag-over");
+      }
+
+      function handleCardDrop(targetIdx, event) {
+        event.preventDefault();
+        const sourceIdx = Number(event.dataTransfer.getData("text/plain"));
+        if (
+          sourceIdx === null ||
+          isNaN(sourceIdx) ||
+          sourceIdx === targetIdx ||
+          activeFolder === null ||
+          !db[activeFolder]
+        ) {
+          return;
+        }
+
+        const cards = db[activeFolder].cards;
+        const [movedCard] = cards.splice(sourceIdx, 1);
+        cards.splice(targetIdx, 0, movedCard);
+        draggedCardIndex = null;
+        save();
+      }
+
+      function handleCardDragEnd(event) {
+        document.querySelectorAll(".card-container").forEach((el) => {
+          el.classList.remove("dragging", "drag-over");
+        });
+        dragBlockedClick = false;
+      }
+
+      function handleFolderDragStart(folderIdx, event) {
+        draggedFolderIndex = folderIdx;
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", String(folderIdx));
+        event.currentTarget.classList.add("dragging");
+      }
+
+      function handleFolderDragOver(folderIdx, event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+        event.currentTarget.classList.add("drag-over");
+      }
+
+      function handleFolderDragLeave(event) {
+        event.currentTarget.classList.remove("drag-over");
+      }
+
+      function handleFolderDrop(targetIdx, event) {
+        event.preventDefault();
+        const sourceIdx = Number(event.dataTransfer.getData("text/plain"));
+        if (
+          sourceIdx === null ||
+          isNaN(sourceIdx) ||
+          sourceIdx === targetIdx ||
+          sourceIdx < 0 ||
+          targetIdx < 0
+        ) {
+          return;
+        }
+
+        const folder = db.splice(sourceIdx, 1)[0];
+        db.splice(targetIdx, 0, folder);
+
+        if (activeFolder === sourceIdx) {
+          activeFolder = targetIdx;
+        } else if (
+          activeFolder > sourceIdx &&
+          activeFolder <= targetIdx
+        ) {
+          activeFolder--;
+        } else if (
+          activeFolder < sourceIdx &&
+          activeFolder >= targetIdx
+        ) {
+          activeFolder++;
+        }
+
+        document
+          .querySelectorAll(".folder-item")
+          .forEach((el) => el.classList.remove("drag-over"));
+        draggedFolderIndex = null;
+        save();
+      }
+
+      function handleFolderDragEnd(event) {
+        document
+          .querySelectorAll(".folder-item")
+          .forEach((el) => el.classList.remove("dragging", "drag-over"));
+      }
+
+      function handleCardTouchStart(cardIdx, event) {
+        if (event.touches.length !== 1) return;
+        const target = event.target;
+        if (target.closest("button")) return;
+
+        touchDraggingCardIndex = cardIdx;
+        touchTargetIndex = cardIdx;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+        event.currentTarget.classList.add("dragging");
+      }
+
+      function handleCardTouchMove(cardIdx, event) {
+        if (touchDraggingCardIndex === null || event.touches.length !== 1) {
+          return;
+        }
+
+        const touch = event.touches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+
+        if (Math.abs(deltaX) < 8 && Math.abs(deltaY) < 8) return;
+
+        dragBlockedClick = true;
+        event.preventDefault();
+
+        const element = document
+          .elementFromPoint(touch.clientX, touch.clientY)
+          ?.closest(".card-container");
+        if (!element) return;
+
+        const nextIndex = Number(element.getAttribute("data-card-index"));
+        if (Number.isNaN(nextIndex) || nextIndex === touchTargetIndex) return;
+
+        document.querySelectorAll(".card-container").forEach((card) => {
+          card.classList.remove("drag-over");
+        });
+
+        touchTargetIndex = nextIndex;
+        element.classList.add("drag-over");
+      }
+
+      function handleCardTouchEnd(event) {
+        if (touchDraggingCardIndex === null) return;
+
+        const targetIndex = touchTargetIndex;
+        if (
+          targetIndex !== null &&
+          targetIndex !== touchDraggingCardIndex &&
+          activeFolder !== null &&
+          db[activeFolder]
+        ) {
+          const cards = db[activeFolder].cards;
+          const [movedCard] = cards.splice(touchDraggingCardIndex, 1);
+          cards.splice(targetIndex, 0, movedCard);
+          save();
+        }
+
+        document.querySelectorAll(".card-container").forEach((card) => {
+          card.classList.remove("dragging", "drag-over");
+        });
+
+        touchDraggingCardIndex = null;
+        touchTargetIndex = null;
+        dragBlockedClick = false;
+      }
+
+      function selectFolder(idx) {
+        activeFolder = idx;
+        render();
+      }
+
+      function exportData() {
+        if (db.length === 0) {
+          alert("Não há dados para exportar.");
+          return;
+        }
+        const dataStr = JSON.stringify(db, null, 2);
+        const dataBlob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(dataBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "meus_flashcards.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      function escapeAttribute(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function speakText(text) {
+        if (!text) return;
+        if (window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = "en-US";
+          utterance.rate = 1;
+          utterance.pitch = 1;
+          window.speechSynthesis.speak(utterance);
+        } else {
+          alert("Seu navegador não suporta leitura de voz neste momento.");
+        }
+      }
+
+      function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const importedDb = JSON.parse(e.target.result);
+            if (Array.isArray(importedDb)) {
+              if (
+                confirm(
+                  "Isso irá substituir ou mesclar com seus cards atuais. Deseja continuar?",
+                )
+              ) {
+                db = importedDb;
+                activeFolder = null;
+                save();
+                alert("Flashcards importados com sucesso!");
+              }
+            } else {
+              alert("Arquivo inválido. Formato incorreto.");
+            }
+          } catch (error) {
+            alert(
+              "Erro ao ler o arquivo. Certifique-se de que é um arquivo .json válido.",
+            );
+          }
+        };
+        reader.readAsText(file);
+        event.target.value = "";
+      }
+
+      function render() {
+        const fList = document.getElementById("folderList");
+        fList.innerHTML = "";
+        const searchQuery = document
+          .getElementById("folderSearch")
+          .value.toLowerCase()
+          .trim();
+
+        db.forEach((f, i) => {
+          if (searchQuery && !f.name.toLowerCase().includes(searchQuery)) {
+            return;
+          }
+
+          fList.innerHTML += `
+                <div class="folder-item ${activeFolder === i ? "active" : ""}" draggable="true" onclick="selectFolder(${i})" ondragstart="handleFolderDragStart(${i}, event)" ondragover="handleFolderDragOver(${i}, event)" ondragleave="handleFolderDragLeave(event)" ondrop="handleFolderDrop(${i}, event)" ondragend="handleFolderDragEnd(event)">
+                    <div class="folder-label">
+                      <span class="folder-title">${f.name}</span>
+                      <span class="folder-count">${f.cards.length} card(s)</span>
+                    </div>
+                    <div class="folder-actions" role="group">
+                      <button class="btn-icon folder-handle" title="Arrastar para reordenar" draggable="false" onclick="event.stopPropagation();">☰</button>
+                      <button class="btn-icon" title="Editar matéria" onclick="editFolderName(${i}, event)">✏️</button>
+                      <button class="btn-icon" title="Excluir matéria" onclick="deleteFolder(${i}, event)">×</button>
+                    </div>
+                </div>`;
+        });
+
+        const grid = document.getElementById("cardGrid");
+        const header = document.getElementById("headerContainer");
+
+        header.style.display = "flex";
+        const titleElement = document.getElementById("currentTitle");
+        if (activeFolder !== null && db[activeFolder]) {
+          titleElement.innerText = db[activeFolder].name;
+          grid.innerHTML = "";
+
+          if (db[activeFolder].cards.length === 0) {
+            grid.innerHTML = `<p style="color: var(--text-light);">Nenhum card nesta matéria ainda.</p>`;
+          }
+
+          grid.innerHTML += `
+                    <div class="card-container add-card" onclick="addCard()" draggable="false">
+                        <div class="card-inner">
+                            <div class="card-face card-front">
+                                <strong>+</strong>
+                                <span>Adicionar novo card</span>
+                            </div>
+                        </div>
+                    </div>`;
+
+          db[activeFolder].cards.forEach((c, i) => {
+            grid.innerHTML += `
+                    <div class="card-container" data-card-index="${i}" draggable="true" onclick="handleCardClick(this, ${i})" ondragstart="handleCardDragStart(${i}, event)" ondragover="handleCardDragOver(${i}, event)" ondragleave="handleCardDragLeave(event)" ondrop="handleCardDrop(${i}, event)" ondragend="handleCardDragEnd(event)" ontouchstart="handleCardTouchStart(${i}, event)" ontouchmove="handleCardTouchMove(${i}, event)" ontouchend="handleCardTouchEnd(event)">
+                        <div class="card-inner">
+                            <div class="card-face card-front">
+                                <button class="drag-handle" type="button" draggable="false" onclick="event.stopPropagation();" title="Arraste para mover">⠿</button>
+                                <button class="speak-btn" type="button" draggable="false" onclick="event.stopPropagation(); speakText(this.getAttribute('data-text'))" data-text="${escapeAttribute(c.q)}">🔊</button>
+                                <button class="edit-card" type="button" draggable="false" onclick="editCard(${i}, event)">✏️</button>
+                                <button class="delete-card" draggable="false" onclick="deleteCard(${i}, event)">×</button>
+                                <strong>${c.q}</strong>
+                            </div>
+                            <div class="card-face card-back">
+                                <button class="drag-handle" type="button" draggable="false" onclick="event.stopPropagation();" title="Arraste para mover">⠿</button>
+                                <button class="speak-btn" type="button" draggable="false" onclick="event.stopPropagation(); speakText(this.getAttribute('data-text'))" data-text="${escapeAttribute(c.a)}">🔊</button>
+                                <button class="edit-card" type="button" draggable="false" onclick="editCard(${i}, event)">✏️</button>
+                                <button class="delete-card" type="button" draggable="false" onclick="deleteCard(${i}, event)">×</button>
+                                <span>${c.a}</span>
+                            </div>
+                        </div>
+                    </div>`;
+          });
+        } else {
+          titleElement.innerText = "Nenhuma matéria selecionada";
+          grid.innerHTML = `<div style="text-align: center; color: var(--text-light); width: 100%; grid-column: 1 / -1; margin-top: 50px;">Selecione ou crie uma pasta para começar.</div>`;
+        }
+      }
+
+      loadTheme();
+      render();
+    </script>
+  </body>
+</html>
