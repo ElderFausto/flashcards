@@ -1,4 +1,4 @@
-# 📚 Flashcard Simples para Concursos
+# 📚 Flashcard Simples para estudos
 
 Um aplicativo web minimalista, rápido e direto ao ponto para criação e gestão de flashcards. Ideal para focar na memorização.
 
