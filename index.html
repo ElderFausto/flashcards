@@ -438,7 +438,7 @@
       /* Card Container */
       .card-container {
         perspective: 1200px;
-        min-height: 330px;
+        min-height: 370px;
         height: 100%;
         cursor: pointer;
         position: relative;
@@ -559,18 +559,20 @@
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         text-align: center;
         word-break: break-word;
-        padding: 6px 4px;
-        line-height: 1.5;
-        gap: 8px;
+        font-size: 1.3rem;
+        font-weight: 500;
+        padding: 10px 4px 6px 4px;
+        line-height: 1.4;
+        gap: 10px;
       }
 
       .card-body-content img {
         max-width: 100%;
-        max-height: 120px;
+        max-height: 95px;
         border-radius: 8px;
         object-fit: contain;
       }
@@ -759,7 +761,7 @@
       }
 
       .focus-card-wrapper .card-face {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
         padding: 36px;
       }
 
@@ -1564,12 +1566,10 @@
           ? `<img src="${card.image}" style="max-height: 180px; margin-top: 12px; border-radius: 12px;" />`
           : "";
 
-        /* Modo estudo: Frente exibe apenas o texto */
         document.getElementById("focusFrontContent").innerHTML = `
           <div>${formatMarkdown(card.q)}</div>
         `;
 
-        /* Modo estudo: Verso exibe texto + imagem */
         document.getElementById("focusBackContent").innerHTML = `
           <div>${formatMarkdown(card.a)}</div>
           ${imgHtml}
