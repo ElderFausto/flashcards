@@ -559,15 +559,27 @@
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
         align-items: center;
         text-align: center;
         word-break: break-word;
-        font-size: 1.3rem;
-        font-weight: 500;
-        padding: 10px 4px 6px 4px;
+        padding: 6px 4px;
         line-height: 1.4;
         gap: 10px;
+      }
+
+      /* Frente: perfeitamente centralizada e com fonte maior */
+      .card-front .card-body-content {
+        justify-content: center;
+        font-size: 1.85rem;
+        font-weight: 700;
+      }
+
+      /* Verso: alinhado a partir do topo para acomodar resposta e imagem */
+      .card-back .card-body-content {
+        justify-content: flex-start;
+        padding-top: 8px;
+        font-size: 1.35rem;
+        font-weight: 500;
       }
 
       .card-body-content img {
@@ -763,6 +775,10 @@
       .focus-card-wrapper .card-face {
         font-size: 1.8rem;
         padding: 36px;
+      }
+
+      .focus-card-wrapper .card-front .card-body-content {
+        font-size: 2.3rem;
       }
 
       .focus-controls {
@@ -1334,7 +1350,7 @@
                  ondragover="handleCardDragOver(event)"
                  ondrop="handleCardDrop(${idx}, event)">
               <div class="card-inner">
-                <!-- FRENTE: Apenas o nome/termo -->
+                <!-- FRENTE: Centralizado perfeitamente com fonte grande -->
                 <div class="card-face card-front">
                   <div class="card-header-bar">
                     <button class="btn-icon" draggable="false" style="cursor: grab" title="Arrastar para reordenar" onclick="event.stopPropagation()">⠿</button>
@@ -1355,7 +1371,7 @@
                   </div>
                 </div>
 
-                <!-- VERSO: Tradução/Resposta + Imagem -->
+                <!-- VERSO: Alinhado no topo para caber texto e imagem sem cortar -->
                 <div class="card-face card-back">
                   <div class="card-header-bar">
                     <button class="btn-icon" draggable="false" style="cursor: grab" title="Arrastar" onclick="event.stopPropagation()">⠿</button>
