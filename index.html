@@ -133,7 +133,9 @@
         font-family: "Poppins", sans-serif;
         font-size: 0.9rem;
         outline: none;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
       }
 
       input:focus,
@@ -161,7 +163,10 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        transition: transform 0.15s ease, background 0.2s ease, opacity 0.2s ease;
+        transition:
+          transform 0.15s ease,
+          background 0.2s ease,
+          opacity 0.2s ease;
         font-size: 0.9rem;
       }
 
@@ -422,17 +427,18 @@
         transition: width 0.3s;
       }
 
-      /* Flashcards Grid */
+      /* Flashcards Grid (Ajustada largura mínima) */
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 24px;
         align-items: stretch;
       }
 
+      /* Card Container (Aumentada altura mínima) */
       .card-container {
         perspective: 1200px;
-        min-height: 250px;
+        min-height: 330px;
         height: 100%;
         cursor: pointer;
         position: relative;
@@ -510,7 +516,7 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
       }
 
       .card-status-badge {
@@ -547,25 +553,26 @@
         gap: 6px;
       }
 
+      /* Área de Conteúdo (Evita corte superior no scroll) */
       .card-body-content {
         flex: 1;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         text-align: center;
         word-break: break-word;
-        padding: 8px 4px;
-        line-height: 1.6;
+        padding: 6px 4px;
+        line-height: 1.5;
+        gap: 8px;
       }
 
       .card-body-content img {
         max-width: 100%;
-        max-height: 110px;
+        max-height: 120px;
         border-radius: 8px;
-        margin-top: 8px;
-        object-fit: cover;
+        object-fit: contain;
       }
 
       .card-body-content code {
@@ -581,7 +588,7 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
-        margin-top: 12px;
+        margin-top: 8px;
       }
 
       .srs-buttons {
@@ -1101,7 +1108,6 @@
       let draggedFolderIndex = null;
       let isDragging = false;
 
-      // Schema Migration Support
       function migrateData() {
         let legacy = localStorage.getItem("flashcards_v3");
         if (legacy && db.length === 0) {
@@ -1131,7 +1137,6 @@
         renderCards();
       }
 
-      /* Text Formatter (Markdown Lite + Code Support) */
       function formatMarkdown(text) {
         if (!text) return "";
         let escaped = text
@@ -1139,17 +1144,12 @@
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
 
-        // Inline Code `code`
         escaped = escaped.replace(/`([^`]+)`/g, "<code>$1</code>");
-        // Bold **text**
         escaped = escaped.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-        // Italic *text*
         escaped = escaped.replace(/\*([^*]+)\*/g, "<em>$1</em>");
-        // Line breaks
         return escaped.replace(/\n/g, "<br>");
       }
 
-      /* Voice Synthesizer */
       function changeLanguage(lang) {
         currentTtsLang = lang;
         localStorage.setItem("flashcards_lang", lang);
@@ -1166,7 +1166,6 @@
         }
       }
 
-      /* Folder / Deck Operations */
       function addFolder() {
         const inp = document.getElementById("folderInp");
         const val = inp.value.trim();
@@ -1208,7 +1207,6 @@
         }
       }
 
-      /* Render Folders */
       function renderFolders() {
         const fList = document.getElementById("folderList");
         fList.innerHTML = "";
@@ -1240,7 +1238,6 @@
         });
       }
 
-      /* Cards Render & Filter */
       function setFilter(type, btn) {
         activeFilter = type;
         document
@@ -1274,7 +1271,6 @@
           currentDeck.cards.length
         } card(s) cadastrados`;
 
-        // Update Stats Bar
         const cards = currentDeck.cards;
         const total = cards.length;
         const easyCount = cards.filter((c) => c.status === "easy").length;
@@ -1297,14 +1293,12 @@
           easyPct,
         )}% Dominado`;
 
-        // Filter cards
         const searchVal = document
           .getElementById("cardSearch")
           .value.toLowerCase()
           .trim();
         grid.innerHTML = "";
 
-        // Add Card Button Card
         grid.innerHTML += `
           <div class="card-container add-card" onclick="openCreateCardModal()">
             <div class="card-face">
@@ -1314,10 +1308,8 @@
           </div>`;
 
         cards.forEach((card, idx) => {
-          // Status filter
           if (activeFilter !== "all" && card.status !== activeFilter) return;
 
-          // Search term filter
           if (
             searchVal &&
             !card.q.toLowerCase().includes(searchVal) &&
@@ -1351,7 +1343,7 @@
           grid.innerHTML += `
             <div class="card-container" 
                  data-idx="${idx}" 
-                 draggable="true"
+                 draggable="true" 
                  onclick="handleCardClick(this, event)"
                  ondragstart="handleCardDragStart(${idx}, event)"
                  ondragover="handleCardDragOver(event)"
@@ -1417,7 +1409,6 @@
         return (str || "").replace(/'/g, "\\'").replace(/\n/g, " ");
       }
 
-      /* Card Interaction */
       function handleCardClick(cardEl, event) {
         if (isDragging) return;
         if (event.target.closest("button") || event.target.closest("input"))
@@ -1443,7 +1434,6 @@
         save();
       }
 
-      /* Card Creation / Edition Modals */
       function openCreateCardModal() {
         editingCardIndex = null;
         document.getElementById("modalTitle").innerText = "Novo Flashcard";
@@ -1511,7 +1501,6 @@
         document.getElementById(id).classList.remove("active");
       }
 
-      /* Drag and Drop Engine */
       function handleFolderDragStart(idx, event) {
         draggedFolderIndex = idx;
         event.dataTransfer.setData("text/plain", idx);
@@ -1553,7 +1542,6 @@
         save();
       }
 
-      /* Focus / Quiz Fullscreen Mode */
       function openFocusMode() {
         if (!db[activeFolder] || db[activeFolder].cards.length === 0) {
           alert("Adicione alguns cards nesta matéria antes de estudar!");
@@ -1628,7 +1616,6 @@
         speakText(focusFlipped ? card.a : card.q);
       }
 
-      /* Keyboard Shortcuts */
       window.addEventListener("keydown", (e) => {
         const isFocusActive = document
           .getElementById("focusMode")
@@ -1654,7 +1641,6 @@
         }
       });
 
-      /* Backup JSON System */
       function exportData() {
         if (db.length === 0) {
           alert("Não há dados para exportar.");
@@ -1699,7 +1685,6 @@
         e.target.value = "";
       }
 
-      /* Theme Controller */
       function toggleTheme() {
         document.body.classList.toggle("dark");
         const isDark = document.body.classList.contains("dark");
@@ -1715,7 +1700,6 @@
         }
       }
 
-      // Bootstrap
       migrateData();
       loadTheme();
       if (db.length > 0) activeFolder = 0;
