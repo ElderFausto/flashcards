@@ -427,7 +427,7 @@
         transition: width 0.3s;
       }
 
-      /* Flashcards Grid (Ajustada largura mínima) */
+      /* Flashcards Grid */
       .grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -435,7 +435,7 @@
         align-items: stretch;
       }
 
-      /* Card Container (Aumentada altura mínima) */
+      /* Card Container */
       .card-container {
         perspective: 1200px;
         min-height: 330px;
@@ -553,7 +553,7 @@
         gap: 6px;
       }
 
-      /* Área de Conteúdo (Evita corte superior no scroll) */
+      /* Conteúdo dos Cards */
       .card-body-content {
         flex: 1;
         overflow-y: auto;
@@ -1383,6 +1383,7 @@
                   </div>
                   <div class="card-body-content">
                     <div>${formatMarkdown(card.a)}</div>
+                    ${imageHtml}
                   </div>
                   <div class="card-footer-bar" style="flex-direction: column; gap: 8px;">
                     <div class="srs-buttons" onclick="event.stopPropagation()">
@@ -1588,6 +1589,7 @@
 
         document.getElementById("focusBackContent").innerHTML = `
           <div>${formatMarkdown(card.a)}</div>
+          ${imgHtml}
         `;
       }
 
