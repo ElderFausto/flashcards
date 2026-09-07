@@ -559,7 +559,7 @@
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start;
+        justify-content: center;
         align-items: center;
         text-align: center;
         word-break: break-word;
@@ -886,16 +886,6 @@
             ></span>
           </div>
           <div class="header-controls">
-            <select
-              id="ttsVoiceSelect"
-              title="Idioma de Pronúncia"
-              onchange="changeLanguage(this.value)"
-            >
-              <option value="pt-BR">🇧🇷 Português</option>
-              <option value="en-US" selected>🇺🇸 Inglês</option>
-              <option value="es-ES">🇪🇸 Espanhol</option>
-              <option value="fr-FR">🇫🇷 Francês</option>
-            </select>
             <button
               class="btn-secondary"
               onclick="shuffleCards()"
@@ -971,19 +961,19 @@
         </div>
         <div class="modal-body">
           <label>
-            Frente (Pergunta, Termo ou Conceito):
+            Frente (Nome, Palavra ou Termo):
             <textarea
               id="modalFront"
               rows="3"
-              placeholder="Ex: Qual o princípio da anterioridade tributária?"
+              placeholder="Ex: Apple"
             ></textarea>
           </label>
           <label>
-            Verso (Resposta, Definição ou Explicação):
+            Verso (Tradução ou Definição):
             <textarea
               id="modalBack"
               rows="3"
-              placeholder="Ex: Impede cobrança de tributo no mesmo exercício financeiro em que haja sido publicada a lei..."
+              placeholder="Ex: Maçã"
             ></textarea>
           </label>
           <label>
@@ -1150,11 +1140,6 @@
         return escaped.replace(/\n/g, "<br>");
       }
 
-      function changeLanguage(lang) {
-        currentTtsLang = lang;
-        localStorage.setItem("flashcards_lang", lang);
-      }
-
       function speakText(text) {
         if (!text) return;
         if ("speechSynthesis" in window) {
@@ -1250,8 +1235,6 @@
       function renderCards() {
         const header = document.getElementById("mainHeader");
         const grid = document.getElementById("cardGrid");
-        const voiceSelect = document.getElementById("ttsVoiceSelect");
-        if (voiceSelect) voiceSelect.value = currentTtsLang;
 
         if (activeFolder === null || !db[activeFolder]) {
           header.style.display = "none";
@@ -1349,7 +1332,7 @@
                  ondragover="handleCardDragOver(event)"
                  ondrop="handleCardDrop(${idx}, event)">
               <div class="card-inner">
-                <!-- FRENTE -->
+                <!-- FRENTE: Apenas o nome/termo -->
                 <div class="card-face card-front">
                   <div class="card-header-bar">
                     <button class="btn-icon" draggable="false" style="cursor: grab" title="Arrastar para reordenar" onclick="event.stopPropagation()">⠿</button>
@@ -1361,7 +1344,6 @@
                   </div>
                   <div class="card-body-content">
                     <div>${formatMarkdown(card.q)}</div>
-                    ${imageHtml}
                   </div>
                   <div class="card-footer-bar">
                     <span style="font-size: 0.75rem; color: var(--muted)">Frente (Clique p/ virar)</span>
@@ -1371,7 +1353,7 @@
                   </div>
                 </div>
 
-                <!-- VERSO -->
+                <!-- VERSO: Tradução/Resposta + Imagem -->
                 <div class="card-face card-back">
                   <div class="card-header-bar">
                     <button class="btn-icon" draggable="false" style="cursor: grab" title="Arrastar" onclick="event.stopPropagation()">⠿</button>
@@ -1582,11 +1564,12 @@
           ? `<img src="${card.image}" style="max-height: 180px; margin-top: 12px; border-radius: 12px;" />`
           : "";
 
+        /* Modo estudo: Frente exibe apenas o texto */
         document.getElementById("focusFrontContent").innerHTML = `
           <div>${formatMarkdown(card.q)}</div>
-          ${imgHtml}
         `;
 
+        /* Modo estudo: Verso exibe texto + imagem */
         document.getElementById("focusBackContent").innerHTML = `
           <div>${formatMarkdown(card.a)}</div>
           ${imgHtml}
